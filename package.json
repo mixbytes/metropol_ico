@@ -1,0 +1,28 @@
+{
+  "name": "metropol-ico",
+  "version": "1.0.0",
+  "description": "Metropol ICO smart contracts",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mixbytes/metropol_ico"
+  },
+  "keywords": [
+    "metropol",
+    "ICO",
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts",
+    "security"
+  ],
+  "author": "mixbytes team",
+  "license": "Apache-2.0",
+  "homepage": "..",
+  "devDependencies": {
+    "ethereumjs-testrpc": "^4.1.1",
+    "truffle": "^3.4.6",
+    "zeppelin-solidity": "1.2.0",
+    "mixbytes-solidity": "0.1.2"
+  }
+}

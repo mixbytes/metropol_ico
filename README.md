@@ -1,1 +1,0 @@
-# metropol_ico
