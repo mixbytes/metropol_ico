@@ -19,7 +19,7 @@ contract MetropolToken is StandardToken, MultiownedControlled, MintableControlle
      * MetropolToken constructor
      */
     function MetropolToken(address[] _owners)
-        MultiownedControlled(_owners, 2, /* controller: */ address(0))
+        MultiownedControlled(_owners, 2)
     {
         require(3 == _owners.length);
     }
