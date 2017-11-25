@@ -28,9 +28,12 @@ contract('MintableToken', function(accounts) {
 
 
     it('must not burn more than exist', async function() {
-
         assert.equal(1000, await token.balanceOf(accounts[0]));
-
         await expectThrow(token.burn(accounts[0], 1001))
+    });
+
+    it('burn only non-zero amount', async function() {
+        assert.equal(1000, await token.balanceOf(accounts[0]));
+        await expectThrow(token.burn(accounts[0], 0))
     });
 });

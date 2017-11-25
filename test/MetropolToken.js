@@ -10,10 +10,11 @@ contract('MetropolToken', function(accounts) {
         owner3: accounts[0],
         owner1: accounts[1],
         owner2: accounts[2],
-        investor1: accounts[2],
-        investor2: accounts[3],
-        investor3: accounts[4],
-        nobody: accounts[5]
+        controller: accounts[3],
+        investor1: accounts[4],
+        investor2: accounts[5],
+        investor3: accounts[6],
+        nobody: accounts[7]
     };
 
     // converts amount of MTP into MTP-wei
@@ -58,6 +59,40 @@ contract('MetropolToken', function(accounts) {
         assert.equal(await token.balanceOf(role.investor1, {from: role.nobody}), MTP(6));
         assert.equal(await token.balanceOf(role.investor2, {from: role.nobody}), MTP(14));
         assert.equal(await token.balanceOf(role.investor3, {from: role.nobody}), MTP(2));
+    });
+
+    it("Complex ownership test", async function() {
+        const token = await MetropolToken.new([role.owner1, role.owner2, role.owner3], {from: role.nobody});
+
+        //no actions without controller
+        await expectThrow(token.mint(role.investor1, MTP(10), {from: role.owner1}));
+        await expectThrow(token.startCirculation({from: role.owner1}));
+
+        //set and check controller
+        await token.setController(role.controller, {from: role.owner1});
+        assert.equal(0, await token.m_controller());
+        await token.setController(role.controller, {from: role.owner2});
+        assert.equal(role.controller, await token.m_controller());
+
+        //no actions by non controller
+        await expectThrow(token.mint(role.investor1, MTP(10), {from: role.nobody}));
+        await expectThrow(token.startCirculation({from: role.nobody}));
+
+        //minting and balance
+        assert.equal(0, await token.balanceOf(role.investor1));
+        await token.mint(role.investor1, MTP(10), {from: role.controller});
+        assert.equal(MTP(10), await token.balanceOf(role.investor1));
+
+        //no actions before start circulation
+        await expectThrow(token.transfer(role.investor2, MTP(1), {from: role.investor1}));
+
+        await token.startCirculation({from: role.controller});
+
+        //correct transfer
+        token.transfer(role.investor2, MTP(1), {from: role.investor1});
+        assert.equal(MTP(9), await token.balanceOf(role.investor1));
+        assert.equal(MTP(1), await token.balanceOf(role.investor2));
+
     });
 
 });

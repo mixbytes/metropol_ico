@@ -54,5 +54,11 @@ contract('MintableToken', function(accounts) {
         assert(totalSupply, 100);
     });
 
+    it('mint only non-zero amount', async function() {
+        await expectThrow(token.mint(accounts[0], 0))
+    });
 
+    it('mint only to non-zero address', async function() {
+        await expectThrow(token.mint(0, 10))
+    });
 });

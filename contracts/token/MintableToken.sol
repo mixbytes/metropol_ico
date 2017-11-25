@@ -42,6 +42,9 @@ contract MintableToken is StandardToken {
      * @return A boolean that indicates if the operation was successful.
      */
     function mintInternal(address _to, uint256 _amount) internal returns (bool) {
+        require(_amount>0);
+        require(_to!=address(0));
+
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         Mint(_to, _amount);

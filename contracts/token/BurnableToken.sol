@@ -19,6 +19,9 @@ contract BurnableToken is StandardToken {
      * @return A boolean that indicates if the operation was successful.
      */
     function burnInternal(address _from, uint256 _amount) internal returns (bool) {
+        require(_amount>0);
+
+
         totalSupply = totalSupply.sub(_amount);
         balances[_from] = balances[_from].sub(_amount);
         Burn(_from, _amount);
