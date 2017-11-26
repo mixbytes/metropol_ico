@@ -67,6 +67,7 @@ contract('MetropolToken', function(accounts) {
         //no actions without controller
         await expectThrow(token.mint(role.investor1, MTP(10), {from: role.owner1}));
         await expectThrow(token.startCirculation({from: role.owner1}));
+        await expectThrow(token.setController(role.controller, {from: role.nobody}));
 
         //set and check controller
         await token.setController(role.controller, {from: role.owner1});

@@ -15,6 +15,7 @@ contract MultiownedControlled is Controlled, multiowned {
 
     function MultiownedControlled(address[] _owners, uint256 _signaturesRequired)
         multiowned(_owners, _signaturesRequired)
+`        public
     {
         // nothing here
     }

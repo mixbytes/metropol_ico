@@ -4,7 +4,7 @@ import "../../token/BurnableToken.sol";
 
 contract BurnableTokenHelper is BurnableToken {
 
-    function BurnableTokenHelper() {
+    function BurnableTokenHelper() public {
         totalSupply = 1000;
         balances[msg.sender] = 1000;
     }

@@ -3,7 +3,7 @@
 const expectThrow = require('../helpers/expectThrow');
 const BurnableToken = artifacts.require('BurnableTokenHelper.sol');
 
-contract('MintableToken', function(accounts) {
+contract('BurnableToken', function(accounts) {
     let token;
 
     beforeEach(async function() {

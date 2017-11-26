@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import 'zeppelin-solidity/contracts/token/StandardToken.sol';
 import './ownership/Controlled.sol';
@@ -28,6 +28,7 @@ contract MetropolToken is
      */
     function MetropolToken(address[] _owners)
         MultiownedControlled(_owners, 2)
+        public
     {
         require(3 == _owners.length);
     }
