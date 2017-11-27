@@ -9,7 +9,7 @@ contract BurnableControlledTokenHelper is BurnableControlledToken {
         balances[msg.sender] = 1000;
     }
 
-    function setController(address _controller) public {
+    function setController(address _controller) external {
         super.setControllerInternal(_controller);
     }
 }

@@ -23,12 +23,12 @@
 
 pragma solidity ^0.4.15;
 
-import './MintableToken.sol';
+import './MetropolMintableToken.sol';
 
 /**
  * MintableToken with ability to disable  minting
  */
-contract FinishableMintableToken is MintableToken {
+contract FinishableMintableToken is MetropolMintableToken {
 
     bool public m_mintingFinished = false;
 

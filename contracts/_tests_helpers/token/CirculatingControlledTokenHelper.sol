@@ -4,7 +4,7 @@ import "../../token/CirculatingControlledToken.sol";
 
 contract CirculatingControlledTokenHelper is CirculatingControlledToken {
 
-    function setController(address _controller) public {
+    function setController(address _controller) external {
         super.setControllerInternal(_controller);
     }
 }

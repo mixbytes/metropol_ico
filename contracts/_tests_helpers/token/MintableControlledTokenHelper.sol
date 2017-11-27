@@ -4,7 +4,7 @@ import "../../token/MintableControlledToken.sol";
 
 contract MintableControlledTokenHelper is MintableControlledToken {
 
-    function setController(address _controller) public {
+    function setController(address _controller) external {
         super.setControllerInternal(_controller);
     }
 }

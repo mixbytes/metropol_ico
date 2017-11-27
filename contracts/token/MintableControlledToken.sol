@@ -1,12 +1,12 @@
 pragma solidity ^0.4.15;
 
-import './MintableToken.sol';
+import './MetropolMintableToken.sol';
 import '../ownership/Controlled.sol';
 
 /**
  * MintableControlledToken
  */
-contract MintableControlledToken is MintableToken, Controlled {
+contract MintableControlledToken is MetropolMintableToken, Controlled {
 
     /**
      * Function to mint tokens
@@ -16,8 +16,8 @@ contract MintableControlledToken is MintableToken, Controlled {
      *
      * @return A boolean that indicates if the operation was successful.
      */
-    function mint(address _to, uint256 _amount) public onlyController returns (bool) {
-        return super.mintInternal(_to, _amount);
+    function mint(address _to, uint256 _amount) public onlyController {
+        super.mintInternal(_to, _amount);
     }
 
 }

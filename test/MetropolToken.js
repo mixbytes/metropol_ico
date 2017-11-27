@@ -4,7 +4,6 @@ const expectThrow = require('./helpers/expectThrow');
 const MetropolToken = artifacts.require('MetropolToken.sol');
 
 contract('MetropolToken', function(accounts) {
-    let token;
 
     const role = {
         owner3: accounts[0],
