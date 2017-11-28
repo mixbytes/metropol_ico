@@ -54,6 +54,17 @@ contract TokensBurnableReturnableCrowdsale is
         }
     }
 
+    /**
+     * Triggers some state changes based on current time
+     */
+    modifier timedStateChange() {
+        if (getCurrentState() == State.INIT && getCurrentTime() >= getStartTime()) {
+            changeState(State.RUNNING);
+        }
+
+        _;
+    }
+
 
     /**
      * Constructor
@@ -111,13 +122,10 @@ contract TokensBurnableReturnableCrowdsale is
      */
     function buyInternal(address _investor, uint _payment, uint _extraBonuses)
         internal
+        timedStateChange
         exceptsState(State.PAUSED)
         fundsChecker(_investor, _payment)
     {
-        if (getCurrentState() == State.INIT && getCurrentTime() >= getStartTime()) {
-            changeState(State.RUNNING);
-        }
-
         if (!mustApplyTimeCheck(_investor, _payment)) {
             require(State.RUNNING == m_state || State.INIT == m_state);
         }

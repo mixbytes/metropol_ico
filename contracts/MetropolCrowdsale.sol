@@ -9,11 +9,11 @@ import './MetropolToken.sol';
  */
 contract MetropolCrowdsale is TokensBurnableReturnableCrowdsale {
 
-    uint256 internal m_startTimestamp;
-    uint256 internal m_softCap;
-    uint256 internal m_hardCap;
-    uint256 internal m_exchangeRate;
-    address internal m_foundersTokensStorage;
+    uint256 public m_startTimestamp;
+    uint256 public m_softCap;
+    uint256 public m_hardCap;
+    uint256 public m_exchangeRate;
+    address public m_foundersTokensStorage;
 
     function MetropolCrowdsale(
             address _token,
@@ -43,7 +43,12 @@ contract MetropolCrowdsale is TokensBurnableReturnableCrowdsale {
     /**
      * Set exchange rate before start
      */
-    function setExchangeRate(uint256 _tokensForOneEther) public requiresState(State.INIT) {
+    function setExchangeRate(uint256 _tokensForOneEther)
+        public
+        timedStateChange
+        requiresState(State.INIT)
+        onlymanyowners(sha3(msg.data))
+    {
         m_exchangeRate = _tokensForOneEther;
     }
 
@@ -118,15 +123,16 @@ contract MetropolCrowdsale is TokensBurnableReturnableCrowdsale {
         constant
         returns (uint)
     {
-        if (getCurrentTime() <= m_startTimestamp + 30 days) {
+        uint256 secondMonth = m_startTimestamp + 30 days;
+        if (getCurrentTime() <= secondMonth) {
             return payment.mul(m_exchangeRate);
-        } else if (getCurrentTime() <= m_startTimestamp + 37 days) {
+        } else if (getCurrentTime() <= secondMonth + 1 weeks) {
             return payment.mul(m_exchangeRate).mul(100).div(105);
-        } else if (getCurrentTime() <= m_startTimestamp + 44 days) {
+        } else if (getCurrentTime() <= secondMonth + 2 weeks) {
             return payment.mul(m_exchangeRate).mul(100).div(110);
-        } else if (getCurrentTime() <= m_startTimestamp + 51 days) {
+        } else if (getCurrentTime() <= secondMonth + 3 weeks) {
             return payment.mul(m_exchangeRate).mul(100).div(115);
-        } else if (getCurrentTime() <= m_startTimestamp + 58 days) {
+        } else if (getCurrentTime() <= secondMonth + 4 weeks) {
             return payment.mul(m_exchangeRate).mul(100).div(120);
         } else {
             return payment.mul(m_exchangeRate).mul(100).div(125);
@@ -150,6 +156,9 @@ contract MetropolCrowdsale is TokensBurnableReturnableCrowdsale {
         getToken().detachController();
     }
 
+    /**
+     * Returns attached token
+     */
     function getToken() internal returns(MetropolToken) {
         return MetropolToken(m_token);
     }

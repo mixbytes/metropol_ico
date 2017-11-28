@@ -44,17 +44,6 @@ contract MetropolCrowdsaleHelper is MetropolCrowdsale {
     }
 
 
-    /**
-     * Formula for calculating tokens from contributed ether
-     */
-    function calculateTokens(address /*investor*/, uint payment, uint /*extraBonuses*/)
-        internal
-        constant
-        returns (uint)
-    {
-        return payment;
-    }
-
     function getCurrentTime() internal constant returns (uint) {
         return m_time;
     }
