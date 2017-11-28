@@ -159,6 +159,23 @@ export function crowdsaleUTest(accounts, instantiate, settings) {
     }
 
 
+    async function checkTransfers(token) {
+        let checked = false;
+        for (const addr of [role.investor1, role.investor2, role.investor3]) {
+            const balance = await token.balanceOf(addr);
+            if (balance.gt(0)) {
+                await token.transfer(role.nobody, 1, {from: addr});
+                assert.equal(balance.sub(1).valueOf(), (await token.balanceOf(addr)).valueOf(), 'Check transfer');
+                await token.transfer(addr,        1, {from: role.nobody});
+                assert.equal(balance.valueOf(), (await token.balanceOf(addr)).valueOf(), 'Check transfer');
+
+                checked = true;
+            }
+        }
+
+        assert(checked, 'Check transfers failed since no positive investors balances')
+    }
+
     // testing-related functions
 
     async function ourInstantiate() {
@@ -321,6 +338,8 @@ export function crowdsaleUTest(accounts, instantiate, settings) {
                 assert.equal(await funds.m_investors(0), role.investor1);
                 assert.equal(await funds.m_investors(1), role.investor2);
             }
+
+            await checkTransfers(token);
         }]);
 
 
@@ -404,7 +423,7 @@ export function crowdsaleUTest(accounts, instantiate, settings) {
                 await crowdsale[settings.usingFundCrowdsalewithdrawPaymentsMethod]({from: role.investor1})
                 await assertBalances(crowdsale, token, funds, cashInitial, web3.toWei(0, 'finney'));
                 assert.equal(0, (await token.balanceOf(role.investor1)).valueOf(), 'Investor token balance =0');
-          }]);
+            }]);
         }
     }
 
