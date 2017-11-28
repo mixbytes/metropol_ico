@@ -20,6 +20,7 @@ contract Controlled {
         _;
     }
 
+    function setController(address _controller) external;
 
     /**
      * Sets the controller. Internal for not forgetting to add access modifier

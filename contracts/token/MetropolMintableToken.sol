@@ -24,13 +24,16 @@
 pragma solidity ^0.4.15;
 
 import 'zeppelin-solidity/contracts/token/StandardToken.sol';
+import 'mixbytes-solidity/contracts/token/MintableToken.sol';
 
 /**
- * MintableToken
+ * MetropolMintableToken
  */
-contract MintableToken is StandardToken {
+contract MetropolMintableToken is StandardToken, MintableToken {
 
     event Mint(address indexed to, uint256 amount);
+
+    function mint(address _to, uint256 _amount) public;//todo propose return value
 
     /**
      * Function to mint tokens

@@ -2,9 +2,9 @@
 
 const expectThrow = require('../helpers/expectThrow');
 
-const MultiownedControlled = artifacts.require("MultiownedControlled.sol");
+const MetropolMultiownedControlled = artifacts.require("MetropolMultiownedControlled.sol");
 
-contract('MultiownedControlled', function(accounts) {
+contract('MetropolMultiownedControlled', function(accounts) {
 
     const roles = {
         owner1: accounts[0],
@@ -18,7 +18,7 @@ contract('MultiownedControlled', function(accounts) {
     let contract;
 
     beforeEach(async function() {
-        contract = await MultiownedControlled.new([roles.owner1, roles.owner2, roles.owner3], 2);
+        contract = await MetropolMultiownedControlled.new([roles.owner1, roles.owner2, roles.owner3], 2);
     });
 
     it("correct multiowned init", async function() {

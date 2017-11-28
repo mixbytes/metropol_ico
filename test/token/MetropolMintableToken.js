@@ -24,13 +24,13 @@
 'use strict';
 
 const expectThrow = require('../helpers/expectThrow');
-const MintableToken = artifacts.require('MintableTokenHelper.sol');
+const MetropolMintableToken = artifacts.require('MetropolMintableTokenHelper.sol');
 
-contract('MintableToken', function(accounts) {
+contract('MetropolMintableToken', function(accounts) {
     let token;
 
     beforeEach(async function() {
-        token = await MintableToken.new();
+        token = await MetropolMintableToken.new();
     });
 
     it('should start with a totalSupply of 0', async function() {

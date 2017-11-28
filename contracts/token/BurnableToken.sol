@@ -9,6 +9,8 @@ contract BurnableToken is StandardToken {
 
     event Burn(address indexed from, uint256 amount);
 
+    function burn(address _from, uint256 _amount) public returns (bool);
+
     /**
      * Function to burn tokens
      * Internal for not forgetting to add access modifier
