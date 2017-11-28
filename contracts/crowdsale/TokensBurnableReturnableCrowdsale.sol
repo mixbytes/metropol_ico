@@ -11,9 +11,6 @@ pragma solidity ^0.4.18;
 
 import 'mixbytes-solidity/contracts/crowdsale/SimpleCrowdsaleBase.sol';
 import '../lifecycle/SimpleStateful.sol';
-import '../token/BurnableToken.sol';
-import '../token/CirculatingControlledToken.sol';
-import '../ownership/Controlled.sol';
 import 'mixbytes-solidity/contracts/ownership/multiowned.sol';
 import './MetropolFundsRegistryWalletConnector.sol';
 
@@ -60,8 +57,6 @@ contract TokensBurnableReturnableCrowdsale is
 
     /**
      * Constructor
-     *
-     * Token MUST be CirculatingControlledToken, BuenableToken
      */
     function TokensBurnableReturnableCrowdsale(
             address _token,
@@ -98,17 +93,16 @@ contract TokensBurnableReturnableCrowdsale is
         wcOnCrowdsaleFailure();
     }
 
-    function withdrawPayments() public requiresState(State.FAILED) {
+    function withdrawPayments() //todo non reentrant?
+        public
+        requiresState(State.FAILED)
+    {
         if (getCurrentTime() >= getEndTime()) {
             finish();
         }
 
         m_fundsAddress.withdrawPayments(msg.sender);
-
-        uint amount = BurnableToken(m_token).balanceOf(msg.sender);
-        BurnableToken(m_token).burn(msg.sender, amount);
-
-        Withdraw(msg.sender, amount);
+        Withdraw(msg.sender, m_fundsAddress.m_weiBalances(msg.sender));
     }
 
 
@@ -141,9 +135,6 @@ contract TokensBurnableReturnableCrowdsale is
         super.wcOnCrowdsaleSuccess();
 
         changeState(State.SUCCEEDED);
-
-        CirculatingControlledToken(m_token).startCirculation();
-        Controlled(m_token).detachController();
     }
 
     /// @dev called in case crowdsale failed

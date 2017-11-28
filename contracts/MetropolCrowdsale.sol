@@ -47,6 +47,18 @@ contract MetropolCrowdsale is TokensBurnableReturnableCrowdsale {
         m_exchangeRate = _tokensForOneEther;
     }
 
+    /**
+     * withdraw payments by investor on fail
+     */
+    function withdrawPayments() public {
+        getToken().burn(
+            msg.sender,
+            getToken().balanceOf(msg.sender)
+        );
+
+        super.withdrawPayments();
+    }
+
 
     // INTERNAL
     /**
@@ -125,14 +137,20 @@ contract MetropolCrowdsale is TokensBurnableReturnableCrowdsale {
      * Additional on-success actions
      */
     function wcOnCrowdsaleSuccess() internal {
+        super.wcOnCrowdsaleSuccess();
 
         //20% of total totalSupply to team
         m_token.mint(
             m_foundersTokensStorage,
-            MetropolToken(m_token).totalSupply().mul(20).div(80)
+            getToken().totalSupply().mul(20).div(80)
         );
 
-        //detaches controller, so all actions above
-        super.wcOnCrowdsaleSuccess();
+
+        getToken().startCirculation();
+        getToken().detachController();
+    }
+
+    function getToken() internal returns(MetropolToken) {
+        return MetropolToken(m_token);
     }
 }
