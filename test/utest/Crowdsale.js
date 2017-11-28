@@ -364,7 +364,7 @@ export function crowdsaleUTest(accounts, instantiate, settings) {
             if (! settings.endTime)
                 throw new Error('softCap makes no sense without endTime');
 
-            tests.push([testName("test soft cap"), async function() {
+            tests.push([testName("test soft cap not reached"), async function() {
                 const [crowdsale, token, funds] = await ourInstantiate();
                 const cashInitial = await getFundsBalance(funds);
                 if (settings.startTime)
@@ -387,8 +387,11 @@ export function crowdsaleUTest(accounts, instantiate, settings) {
                     crowdsale[settings.usingFundCrowdsalewithdrawPaymentsMethod]({from: role.owner3})
                 );
 
+                assert(0<(await token.balanceOf(role.investor2)).valueOf(), 'Investor token balance >0');
                 await crowdsale[settings.usingFundCrowdsalewithdrawPaymentsMethod]({from: role.investor2})
                 await assertBalances(crowdsale, token, funds, cashInitial, web3.toWei(20, 'finney'));
+                assert.equal(0, (await token.balanceOf(role.investor2)).valueOf(), 'Investor token balance =0');
+
                 await expectThrow(
                     crowdsale[settings.usingFundCrowdsalewithdrawPaymentsMethod]({from: role.nobody})
                 );
@@ -397,8 +400,10 @@ export function crowdsaleUTest(accounts, instantiate, settings) {
                 await checkNotInvesting(crowdsale, token, funds);
                 await checkNotSendingEther(funds);
 
+                assert(0<(await token.balanceOf(role.investor1)).valueOf(), 'Investor token balance >0');
                 await crowdsale[settings.usingFundCrowdsalewithdrawPaymentsMethod]({from: role.investor1})
                 await assertBalances(crowdsale, token, funds, cashInitial, web3.toWei(0, 'finney'));
+                assert.equal(0, (await token.balanceOf(role.investor1)).valueOf(), 'Investor token balance =0');
           }]);
         }
     }

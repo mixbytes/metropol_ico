@@ -36,7 +36,7 @@ async function instantiate(role) {
 }
 
 
-contract('CommonCrowdsleTests', function(accounts) {
+contract('CommonCrowdsaleTests', function(accounts) {
 
     for (const [name, fn] of crowdsaleUTest(accounts, instantiate, {
         usingFund: true,
