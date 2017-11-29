@@ -22,7 +22,7 @@ contract BurnableToken is StandardToken {
      */
     function burnInternal(address _from, uint256 _amount) internal returns (bool) {
         require(_amount>0);
-
+        require(_amount<=balances[_from]);
 
         totalSupply = totalSupply.sub(_amount);
         balances[_from] = balances[_from].sub(_amount);

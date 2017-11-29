@@ -10,23 +10,13 @@ contract MetropolCrowdsaleHelper is MetropolCrowdsale {
     function MetropolCrowdsaleHelper(
             address _token,
             address _funds,
-            address[] _owners,
-            address _foundersTokensStorage,
-            uint256 _startTimestamp,
-            uint256 _softCapInEther,
-            uint256 _hardCapInEther,
-            uint256 _tokensForOneEther
+            address[] _owners
         )
         public
         MetropolCrowdsale(
             _token,
             _funds,
-            _owners,
-            _foundersTokensStorage,
-            _startTimestamp,
-            _softCapInEther,
-            _hardCapInEther,
-            _tokensForOneEther
+            _owners
         )
 
     {

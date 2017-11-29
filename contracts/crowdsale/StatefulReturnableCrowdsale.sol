@@ -16,9 +16,9 @@ import './MetropolFundsRegistryWalletConnector.sol';
 
 
 /**
- * Crowdsale with tokens burning after refund on fail
+ * Crowdsale with state
  */
-contract TokensBurnableReturnableCrowdsale is
+contract StatefulReturnableCrowdsale is
     SimpleCrowdsaleBase,
     SimpleStateful,
     multiowned,
@@ -69,7 +69,7 @@ contract TokensBurnableReturnableCrowdsale is
     /**
      * Constructor
      */
-    function TokensBurnableReturnableCrowdsale(
+    function StatefulReturnableCrowdsale(
             address _token,
             address _funds,
             address[] _owners,
@@ -79,6 +79,8 @@ contract TokensBurnableReturnableCrowdsale is
         SimpleCrowdsaleBase(_token)
         multiowned(_owners, _signaturesRequired)
         MetropolFundsRegistryWalletConnector(_funds)
+        validAddress(_token)
+        validAddress(_funds)
     {
     }
 
@@ -114,8 +116,8 @@ contract TokensBurnableReturnableCrowdsale is
         nonReentrant
         requiresState(State.FAILED)
     {
-        m_fundsAddress.withdrawPayments(msg.sender);
         Withdraw(msg.sender, m_fundsAddress.m_weiBalances(msg.sender));
+        m_fundsAddress.withdrawPayments(msg.sender);
     }
 
 

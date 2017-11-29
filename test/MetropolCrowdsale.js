@@ -16,13 +16,25 @@ async function instantiate(role) {
         token.address,
         funds.address,
         [role.owner1, role.owner2, role.owner3],
+
+
+        {from: role.nobody}
+    );
+    await crowdsale.setInitialSettings(
         role.nobody,
         (new Date('Mon, 1 Jan 2018 0:00:00 GMT')).getTime() / 1000,
         web3.toWei(100, 'finney'),
         web3.toWei(400, 'finney'),
         1,
-
-        {from: role.nobody}
+        {from: role.owner1}
+    );
+    await crowdsale.setInitialSettings(
+        role.nobody,
+        (new Date('Mon, 1 Jan 2018 0:00:00 GMT')).getTime() / 1000,
+        web3.toWei(100, 'finney'),
+        web3.toWei(400, 'finney'),
+        1,
+        {from: role.owner2}
     );
 
     await token.setController(crowdsale.address, {from: role.owner1});
@@ -130,6 +142,55 @@ contract('MetropolCrowdsale', function(accounts) {
 
         assert.equal(web3.toWei(25, 'finney'), (await token.balanceOf(role.nobody)).valueOf());
         assert.equal(web3.toWei(125, 'finney'), (await token.totalSupply()).valueOf());
+    });
+
+    it("Not works before settings set", async function() {
+        const token = await MetropolToken.new([role.owner1, role.owner2, role.owner3],       {from: role.nobody});
+        const funds = await FundsRegistry.new([role.owner1, role.owner2, role.owner3], 2, 0, {from: role.nobody});
+
+        const crowdsale =  await MetropolCrowdsale.new(
+            token.address,
+            funds.address,
+            [role.owner1, role.owner2, role.owner3],
+
+            {from: role.nobody}
+        );
+
+        await token.setController(crowdsale.address, {from: role.owner1});
+        await token.setController(crowdsale.address, {from: role.owner2});
+
+        await funds.setController(crowdsale.address, {from: role.owner1});
+        await funds.setController(crowdsale.address, {from: role.owner2});
+
+        //after init date time
+        await crowdsale.setTime((new Date('2030-01-02 0:00:01 GMT')).getTime() / 1000);
+        await expectThrow(crowdsale.sendTransaction({from: role.investor1, value: web3.toWei(100, 'finney')}));
+
+        //current time
+        await crowdsale.setTime((new Date('2018-01-02 0:00:01 GMT')).getTime() / 1000);
+        await expectThrow(crowdsale.sendTransaction({from: role.investor1, value: web3.toWei(100, 'finney')}));
+
+        await crowdsale.setInitialSettings(
+            role.nobody,
+            (new Date('Mon, 1 Jan 2018 0:00:00 GMT')).getTime() / 1000,
+            web3.toWei(100, 'finney'),
+            web3.toWei(400, 'finney'),
+            1,
+            {from: role.owner1}
+        );
+        await crowdsale.setInitialSettings(
+            role.nobody,
+            (new Date('Mon, 1 Jan 2018 0:00:00 GMT')).getTime() / 1000,
+            web3.toWei(100, 'finney'),
+            web3.toWei(400, 'finney'),
+            1,
+            {from: role.owner2}
+        );
+
+        await crowdsale.setTime((new Date('2018-01-02 0:00:01 GMT')).getTime() / 1000);
+        await crowdsale.sendTransaction({from: role.investor1, value: web3.toWei(100, 'finney')});
+        assert.equal(web3.toWei(100, 'finney'), (await token.balanceOf(role.investor1)).valueOf());
+
     });
 
 });

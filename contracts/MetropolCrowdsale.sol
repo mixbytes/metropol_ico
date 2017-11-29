@@ -1,24 +1,40 @@
 pragma solidity ^0.4.18;
 
-import './crowdsale/TokensBurnableReturnableCrowdsale.sol';
+import './crowdsale/StatefulReturnableCrowdsale.sol';
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 import './MetropolToken.sol';
 
 /**
  * MetropolCrowdsale
  */
-contract MetropolCrowdsale is TokensBurnableReturnableCrowdsale {
+contract MetropolCrowdsale is StatefulReturnableCrowdsale {
 
     uint256 public m_startTimestamp;
     uint256 public m_softCap;
     uint256 public m_hardCap;
     uint256 public m_exchangeRate;
     address public m_foundersTokensStorage;
+    bool public m_initialSettingsSet = false;
 
-    function MetropolCrowdsale(
-            address _token,
-            address _funds,
-            address[] _owners,
+    modifier requireSettingsSet() {
+        require(m_initialSettingsSet);
+        _;
+    }
+
+    function MetropolCrowdsale(address _token, address _funds, address[] _owners)
+        public
+        StatefulReturnableCrowdsale(_token, _funds, _owners, 2)
+    {
+        require(3 == _owners.length);
+
+        //2030-01-01, not to start crowdsale
+        m_startTimestamp = 1893456000;
+    }
+
+    /**
+     * Set exchange rate before start
+     */
+    function setInitialSettings(
             address _foundersTokensStorage,
             uint256 _startTimestamp,
             uint256 _softCapInEther,
@@ -26,18 +42,26 @@ contract MetropolCrowdsale is TokensBurnableReturnableCrowdsale {
             uint256 _tokensForOneEther
         )
         public
-        TokensBurnableReturnableCrowdsale(_token, _funds, _owners, 2)
-        validAddress(_token)
-        validAddress(_funds)
+        timedStateChange
+        requiresState(State.INIT)
+        onlymanyowners(sha3(msg.data))
         validAddress(_foundersTokensStorage)
     {
-        require(3 == _owners.length);
+        //no check for settings set
+        //can be set multiple times before ICO
+
+        require(_startTimestamp!=0);
+        require(_softCapInEther!=0);
+        require(_hardCapInEther!=0);
+        require(_tokensForOneEther!=0);
 
         m_startTimestamp = _startTimestamp;
         m_softCap = _softCapInEther * 1 ether;
         m_hardCap = _hardCapInEther * 1 ether;
         m_exchangeRate = _tokensForOneEther;
         m_foundersTokensStorage = _foundersTokensStorage;
+
+        m_initialSettingsSet = true;
     }
 
     /**
@@ -55,7 +79,7 @@ contract MetropolCrowdsale is TokensBurnableReturnableCrowdsale {
     /**
      * withdraw payments by investor on fail
      */
-    function withdrawPayments() public {
+    function withdrawPayments() public requireSettingsSet {
         getToken().burn(
             msg.sender,
             getToken().balanceOf(msg.sender)
@@ -66,6 +90,17 @@ contract MetropolCrowdsale is TokensBurnableReturnableCrowdsale {
 
 
     // INTERNAL
+    /**
+     * Additional check of initial settings set
+     */
+    function buyInternal(address _investor, uint _payment, uint _extraBonuses)
+        internal
+        requireSettingsSet
+    {
+        super.buyInternal(_investor, _payment, _extraBonuses);
+    }
+
+
     /**
      * All users except deployer must check time before contributing
      */
