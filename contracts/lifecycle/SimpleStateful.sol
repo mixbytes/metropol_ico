@@ -12,7 +12,7 @@ contract SimpleStateful {
         _;
     }
 
-    modifier exceptsState(State _state) {
+    modifier exceptState(State _state) {
         require(m_state != _state);
         _;
     }

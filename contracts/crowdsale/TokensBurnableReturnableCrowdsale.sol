@@ -95,23 +95,25 @@ contract TokensBurnableReturnableCrowdsale is
         requiresState(State.PAUSED)
     {
         changeState(State.RUNNING);
-    }
-    function failCrowdsale()
-        public
-        onlymanyowners(sha3(msg.data))//todo finish=true
-        requiresState(State.PAUSED)
-    {
-        wcOnCrowdsaleFailure();
-    }
 
-    function withdrawPayments() //todo non reentrant?
-        public
-        requiresState(State.FAILED)
-    {
         if (getCurrentTime() >= getEndTime()) {
             finish();
         }
+    }
+    function failCrowdsale()
+        public
+        onlymanyowners(sha3(msg.data))
+        requiresState(State.PAUSED)
+    {
+        wcOnCrowdsaleFailure();
+        m_finished = true;
+    }
 
+    function withdrawPayments()
+        public
+        nonReentrant
+        requiresState(State.FAILED)
+    {
         m_fundsAddress.withdrawPayments(msg.sender);
         Withdraw(msg.sender, m_fundsAddress.m_weiBalances(msg.sender));
     }
@@ -123,7 +125,7 @@ contract TokensBurnableReturnableCrowdsale is
     function buyInternal(address _investor, uint _payment, uint _extraBonuses)
         internal
         timedStateChange
-        exceptsState(State.PAUSED)
+        exceptState(State.PAUSED)
         fundsChecker(_investor, _payment)
     {
         if (!mustApplyTimeCheck(_investor, _payment)) {
