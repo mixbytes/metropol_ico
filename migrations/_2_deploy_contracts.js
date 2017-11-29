@@ -19,10 +19,16 @@ module.exports = function(deployer, network) {
     }).then(function(instance) {
         _token = instance;
 
+        console.log('token ok: ' + _token.address);
+
         return FundsRegistry.new(_owners, 2, 0);
     }).then(function(instance) {
         _funds = instance;
 
-        return Crowdsale(_token.address, _funds.address, _owners);
+        console.log('funds ok: ' + _funds.address);
+
+        return Crowdsale.new(_token.address, _funds.address, _owners);
+    }).then(function(instance) {
+        console.log('sale ok: ' + instance.address);
     });
 };
