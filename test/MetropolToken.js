@@ -24,14 +24,14 @@ contract('MetropolToken', function(accounts) {
     async function instantiate() {
         const token = await MetropolToken.new([role.owner1, role.owner2, role.owner3], {from: role.nobody});
 
-        await token.setController(role.owner1, {from: role.owner1});
-        await token.setController(role.owner1, {from: role.owner2});
+        await token.setController(role.controller, {from: role.owner1});
+        await token.setController(role.controller, {from: role.owner2});
 
-        await token.mint(role.investor1, MTP(10), {from: role.owner1});
-        await token.mint(role.investor2, MTP(12), {from: role.owner1});
+        await token.mint(role.investor1, MTP(10), {from: role.controller});
+        await token.mint(role.investor2, MTP(12), {from: role.controller});
         // await token.disableMinting({from: role.owner1});
 
-        await token.startCirculation({from: role.owner1});
+        await token.startCirculation({from: role.controller});
 
         return token;
     }
@@ -92,6 +92,32 @@ contract('MetropolToken', function(accounts) {
         token.transfer(role.investor2, MTP(1), {from: role.investor1});
         assert.equal(MTP(9), await token.balanceOf(role.investor1));
         assert.equal(MTP(1), await token.balanceOf(role.investor2));
+
+    });
+
+    it("Name and symbol could be set", async function() {
+        const token = await instantiate();
+
+        assert.equal('', await token.name({from: role.nobody}));
+        assert.equal('', await token.symbol({from: role.nobody}));
+
+        //empty name or symbol
+        await token.setNameSymbol('', 'smb', {from: role.owner1}); //first sign do not throw
+        await expectThrow(token.setNameSymbol('', 'smb', {from: role.owner2}));
+        await token.setNameSymbol('name', '', {from: role.owner1}); //first sign do not throw
+        await expectThrow(token.setNameSymbol('name', '', {from: role.owner2}));
+
+        //set and check name and symbol
+        await token.setNameSymbol('name', 'smb', {from: role.owner1});
+        assert.equal('', await token.name({from: role.nobody}));
+        assert.equal('', await token.symbol({from: role.nobody}));
+        await token.setNameSymbol('name', 'smb', {from: role.owner2});
+        assert.equal('name', await token.name({from: role.nobody}));
+        assert.equal('smb', await token.symbol({from: role.nobody}));
+
+        //no reset
+        await token.setNameSymbol('name', 'smb', {from: role.owner1});//first sign do not throw
+        await expectThrow(token.setNameSymbol('name', 'smb', {from: role.owner2}));
 
     });
 

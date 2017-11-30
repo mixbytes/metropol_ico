@@ -19,8 +19,8 @@ contract MetropolToken is
     CirculatingControlledToken,
     MetropolMultiownedControlled
 {
-    string public constant name = 'Metropol Token';
-    string public constant symbol = 'MTP';
+    string internal m_name = '';
+    string internal m_symbol = '';
     uint8 public constant decimals = 18;
 
     /**
@@ -31,6 +31,21 @@ contract MetropolToken is
         public
     {
         require(3 == _owners.length);
+    }
+
+    function name() public constant returns (string) {
+        return m_name;
+    }
+    function symbol() public constant returns (string) {
+        return m_symbol;
+    }
+
+    function setNameSymbol(string _name, string _symbol) external onlymanyowners(sha3(msg.data)) {
+        require(bytes(m_name).length==0);
+        require(bytes(_name).length!=0 && bytes(_symbol).length!=0);
+
+        m_name = _name;
+        m_symbol = _symbol;
     }
 
 }
